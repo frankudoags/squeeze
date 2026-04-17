@@ -1,0 +1,3 @@
+[workspace]
+members = ["crates/squeeze-core", "crates/squeeze-napi", "crates/squeeze-wasm"]
+resolver = "2"
