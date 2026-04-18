@@ -2,13 +2,25 @@
   "name": "@squeeze/squeeze",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
   "bin": {
-    "squeeze": "./bin/squeeze.ts"
+    "squeeze": "./bin/squeeze.mjs"
   },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
   "scripts": {
-    "build": "echo build-squeeze",
-    "check": "echo check-squeeze",
+    "build": "rolldown -c",
+    "check": "tsc --noEmit",
+    "lint": "oxlint",
+    "fmt": "oxfmt --write",
+    "fmt:check": "oxfmt --check",
     "test": "echo test-squeeze"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.45.0",
+    "oxlint": "^1.60.0",
+    "rolldown": "^1.0.0-rc.16",
+    "typescript": "^5.8.0"
   }
 }

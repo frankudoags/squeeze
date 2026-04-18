@@ -28,7 +28,10 @@
           "path": { "type": "string" },
           "inputFormat": { "type": "string" },
           "inputSizeBytes": { "type": "integer", "minimum": 0 },
-          "status": { "type": "string", "enum": ["compliant", "violation", "fixed", "unresolved", "error"] },
+          "status": {
+            "type": "string",
+            "enum": ["compliant", "violation", "fixed", "unresolved", "error"]
+          },
           "outputFormat": { "type": "string" },
           "outputSizeBytes": { "type": "integer", "minimum": 0 },
           "reasonCode": {

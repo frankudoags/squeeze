@@ -3,12 +3,14 @@
 Squeeze is a JavaScript package powered by Rust for image budget enforcement and optimization. It ships as a CLI + JS API for local dev/CI, plus a local web playground using the same Rust core compiled to WASM, and a documentation site built with Fumadocs.
 
 Recommended architecture: one shared Rust core crate for all optimization logic, with two adapters:
+
 - Node adapter via napi-rs for CLI and JS package runtime.
 - Web adapter via wasm-bindgen for browser/local web UI.
 
 This keeps behavior consistent across CLI, programmatic API, and web playground.
 
 **Steps**
+
 1. Phase 1: Scope and Product Contracts
 1. Lock v1 scope:
 1. one-shot scan/check/fix CLI (no watch mode)
@@ -155,6 +157,7 @@ This keeps behavior consistent across CLI, programmatic API, and web playground.
 1. CLI check/fix run on fixture repo.
 
 **How JS and Rust Talk (Detailed Runtime Contracts)**
+
 1. CLI to JS layer
 1. CLI parses args and resolves effective config.
 1. CLI calls JS API function with normalized config object.
@@ -179,17 +182,20 @@ This keeps behavior consistent across CLI, programmatic API, and web playground.
 Design rule: both NAPI and WASM adapters must only orchestrate conversion at boundaries; all optimization policy logic lives in squeeze-core.
 
 **CLI Contract (v1 Draft)**
+
 1. squeeze check --paths <glob|dir> --max-kb 500 --formats webp --json
 1. squeeze fix --paths <glob|dir> --max-kb 500 --formats webp --policy compress,resize --dry-run
 1. squeeze scan --paths <glob|dir>
 
 Behavior:
+
 1. check never writes files, only reports violations.
 1. fix writes side-by-side outputs by default using configurable suffix.
 1. unresolved files include reason codes (for example QUALITY_FLOOR_REACHED).
 1. JSON mode always emits stable schema suitable for CI parsing.
 
 **Step-by-Step Action Items (Execution Checklist)**
+
 1. Write squeeze config schema and result schema docs first.
 1. Scaffold monorepo structure and Rust workspace crates.
 1. Implement squeeze-core scanner and metadata extraction.
@@ -205,6 +211,7 @@ Behavior:
 1. Add release pipeline and publish candidate alpha.
 
 **Relevant files (planned)**
+
 - /Users/macbook/Desktop/work/frontend-stuff/js-rust/plan.md — canonical project blueprint in workspace.
 - /Users/macbook/Desktop/work/frontend-stuff/js-rust/packages/squeeze/package.json — npm metadata, scripts, optionalDependencies, bin.
 - /Users/macbook/Desktop/work/frontend-stuff/js-rust/packages/squeeze/src/index.ts — JS API wrapper over native bindings.
@@ -221,6 +228,7 @@ Behavior:
 - /Users/macbook/Desktop/work/frontend-stuff/js-rust/.github/workflows/release.yml — binary build, npm publish, docs deploy.
 
 **Verification**
+
 1. Canonical case passes: 2MB png becomes compliant webp <= 500KB or deterministic failure reason.
 1. check mode returns exit code 1 on unresolved violations.
 1. fix mode produces side-by-side outputs and stable JSON reports.
@@ -229,6 +237,7 @@ Behavior:
 1. Supported platform install selects correct optional binary package.
 
 **Decisions**
+
 - Project name: Squeeze.
 - v1 includes: CLI + JS API + docs + local web playground.
 - v1 excludes: watch mode.
