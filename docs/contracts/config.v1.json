@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://squeeze.dev/schemas/config.v1.json",
+  "title": "SqueezeConfigV1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "includePaths": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "default": ["."]
+    },
+    "ignoreGlobs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "default": ["**/node_modules/**", "**/.git/**"]
+    },
+    "maxSizeKb": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 500
+    },
+    "allowedFormats": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["webp", "jpeg", "png", "avif"] },
+      "minItems": 1,
+      "default": ["webp"]
+    },
+    "outputStrategy": {
+      "type": "string",
+      "enum": ["side-by-side", "in-place"],
+      "default": "side-by-side"
+    },
+    "qualityFloor": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100,
+      "default": 60
+    },
+    "maxCompressionIterations": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "default": 8
+    },
+    "resizeFallback": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "default": false },
+        "minWidth": { "type": "integer", "minimum": 1, "default": 320 },
+        "minHeight": { "type": "integer", "minimum": 1, "default": 320 },
+        "stepPercent": { "type": "integer", "minimum": 1, "maximum": 50, "default": 10 }
+      },
+      "required": ["enabled"]
+    }
+  },
+  "required": ["includePaths", "maxSizeKb", "allowedFormats"]
+}

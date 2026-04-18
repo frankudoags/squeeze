@@ -1,0 +1,14 @@
+{
+  "name": "@squeeze/squeeze",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "squeeze": "./bin/squeeze.ts"
+  },
+  "scripts": {
+    "build": "echo build-squeeze",
+    "check": "echo check-squeeze",
+    "test": "echo test-squeeze"
+  }
+}

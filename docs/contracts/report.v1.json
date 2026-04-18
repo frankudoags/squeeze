@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://squeeze.dev/schemas/report.v1.json",
+  "title": "SqueezeReportV1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "string", "const": "1" },
+    "command": { "type": "string", "enum": ["scan", "check", "fix"] },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "compliant": { "type": "integer", "minimum": 0 },
+        "violations": { "type": "integer", "minimum": 0 },
+        "fixed": { "type": "integer", "minimum": 0 },
+        "unresolved": { "type": "integer", "minimum": 0 }
+      },
+      "required": ["total", "compliant", "violations", "fixed", "unresolved"]
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string" },
+          "inputFormat": { "type": "string" },
+          "inputSizeBytes": { "type": "integer", "minimum": 0 },
+          "status": { "type": "string", "enum": ["compliant", "violation", "fixed", "unresolved", "error"] },
+          "outputFormat": { "type": "string" },
+          "outputSizeBytes": { "type": "integer", "minimum": 0 },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "MAX_SIZE_EXCEEDED",
+              "UNSUPPORTED_FORMAT",
+              "QUALITY_FLOOR_REACHED",
+              "RESIZE_MIN_DIMENSION_REACHED",
+              "ENCODE_FAILED",
+              "DECODE_FAILED",
+              "IO_ERROR",
+              "INVALID_CONFIG"
+            ]
+          }
+        },
+        "required": ["path", "inputFormat", "inputSizeBytes", "status", "reasonCode"]
+      }
+    },
+    "exitCode": { "type": "integer", "enum": [0, 1, 2] }
+  },
+  "required": ["version", "command", "summary", "files", "exitCode"]
+}
