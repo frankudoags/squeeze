@@ -9,7 +9,7 @@ import {
   discoverConfig,
   loadConfigFile,
   type RawConfig,
-} from '../config.js';
+} from '../config/index.js';
 
 describe('DEFAULTS', () => {
   it('matches the expected shape from config.v1.json', () => {
@@ -150,63 +150,95 @@ describe('discoverConfig', () => {
     rmSync(TMP_DIR, { recursive: true, force: true });
   });
 
-  it('loads squeeze.config.json', () => {
+  it('loads squeeze.config.json', async () => {
     const cfgPath = join(TMP_DIR, 'squeeze.config.json');
     writeFileSync(cfgPath, JSON.stringify({ maxSizeKb: 100, allowedFormats: ['png'] }));
-    const raw = discoverConfig(TMP_DIR);
+    const raw = await discoverConfig(TMP_DIR);
     expect(raw.maxSizeKb).toBe(100);
     expect(raw.allowedFormats).toEqual(['png']);
   });
 
-  it('loads package.json#squeeze', () => {
+  it('loads squeeze.config.js', async () => {
+    writeFileSync(
+      join(TMP_DIR, 'squeeze.config.js'),
+      'export default { maxSizeKb: 150, allowedFormats: ["webp"] };',
+    );
+    const raw = await discoverConfig(TMP_DIR);
+    expect(raw.maxSizeKb).toBe(150);
+    expect(raw.allowedFormats).toEqual(['webp']);
+  });
+
+  it('loads squeeze.config.ts', async () => {
+    writeFileSync(
+      join(TMP_DIR, 'squeeze.config.ts'),
+      'import type { RawConfig } from "../config/index.js";\nconst config: RawConfig = { maxSizeKb: 300 };\nexport default config;\n',
+    );
+    const raw = await discoverConfig(TMP_DIR);
+    expect(raw.maxSizeKb).toBe(300);
+  });
+
+  it('loads package.json#squeeze', async () => {
     const pkgPath = join(TMP_DIR, 'package.json');
     writeFileSync(pkgPath, JSON.stringify({ name: 'test', squeeze: { maxSizeKb: 250 } }));
-    const raw = discoverConfig(TMP_DIR);
+    const raw = await discoverConfig(TMP_DIR);
     expect(raw.maxSizeKb).toBe(250);
   });
 
-  it('prefers squeeze.config.json over package.json#squeeze', () => {
+  it('prefers squeeze.config.json over other formats', async () => {
     writeFileSync(join(TMP_DIR, 'squeeze.config.json'), JSON.stringify({ maxSizeKb: 100 }));
+    writeFileSync(
+      join(TMP_DIR, 'squeeze.config.js'),
+      'export default { maxSizeKb: 200 };',
+    );
     writeFileSync(join(TMP_DIR, 'package.json'), JSON.stringify({ squeeze: { maxSizeKb: 999 } }));
-    const raw = discoverConfig(TMP_DIR);
+    const raw = await discoverConfig(TMP_DIR);
     expect(raw.maxSizeKb).toBe(100);
   });
 
-  it('returns empty object when no config file exists', () => {
-    const raw = discoverConfig(TMP_DIR);
+  it('returns empty object when no config file exists', async () => {
+    const raw = await discoverConfig(TMP_DIR);
     expect(raw).toEqual({});
   });
 
-  it('ignores package.json without squeeze field', () => {
+  it('ignores package.json without squeeze field', async () => {
     writeFileSync(join(TMP_DIR, 'package.json'), JSON.stringify({ name: 'test' }));
-    const raw = discoverConfig(TMP_DIR);
+    const raw = await discoverConfig(TMP_DIR);
     expect(raw).toEqual({});
   });
 });
 
 describe('loadConfigFile', () => {
-  it('reads and parses a JSON config file', () => {
+  it('reads and parses a JSON config file', async () => {
     const cfgPath = join(TMP_DIR, 'test.config.json');
     mkdirSync(TMP_DIR, { recursive: true });
     writeFileSync(cfgPath, JSON.stringify({ maxSizeKb: 42 }));
-    const raw = loadConfigFile(cfgPath);
+    const raw = await loadConfigFile(cfgPath);
     expect(raw.maxSizeKb).toBe(42);
     rmSync(TMP_DIR, { recursive: true, force: true });
   });
 
-  it('throws on invalid JSON', () => {
-    const cfgPath = join(TMP_DIR, 'bad.config.json');
+  it('reads and parses a JS config file', async () => {
+    const cfgPath = join(TMP_DIR, 'test.config.js');
     mkdirSync(TMP_DIR, { recursive: true });
-    writeFileSync(cfgPath, 'not json');
-    expect(() => loadConfigFile(cfgPath)).toThrow();
+    writeFileSync(cfgPath, 'export default { maxSizeKb: 77 };');
+    const raw = await loadConfigFile(cfgPath);
+    expect(raw.maxSizeKb).toBe(77);
     rmSync(TMP_DIR, { recursive: true, force: true });
   });
 
-  it('throws on non-object JSON', () => {
+  it('throws on invalid JSON', async () => {
+    const cfgPath = join(TMP_DIR, 'bad.config.json');
+    mkdirSync(TMP_DIR, { recursive: true });
+    writeFileSync(cfgPath, 'not json');
+    await expect(loadConfigFile(cfgPath)).rejects.toThrow();
+    rmSync(TMP_DIR, { recursive: true, force: true });
+  });
+
+  it('throws on non-object JSON', async () => {
     const cfgPath = join(TMP_DIR, 'array.config.json');
     mkdirSync(TMP_DIR, { recursive: true });
     writeFileSync(cfgPath, '[1,2,3]');
-    expect(() => loadConfigFile(cfgPath)).toThrow('must contain a JSON object');
+    await expect(loadConfigFile(cfgPath)).rejects.toThrow('must export an object');
     rmSync(TMP_DIR, { recursive: true, force: true });
   });
 });

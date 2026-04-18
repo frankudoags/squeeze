@@ -1,2 +1,2 @@
-export * from './config';
-export { run } from './cli';
+export * from './config/index';
+export { run } from './cli/index';

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { parseArgs } from '../cli.js';
+import { parseArgs } from '../cli/parse-args.js';
+import { generateConfigContent } from '../cli/commands/init.js';
 
 describe('parseArgs', () => {
   const base = ['node', 'squeeze'];
@@ -17,6 +18,11 @@ describe('parseArgs', () => {
   it('parses fix command', () => {
     const result = parseArgs([...base, 'fix']);
     expect(result.command).toBe('fix');
+  });
+
+  it('parses init command', () => {
+    const result = parseArgs([...base, 'init']);
+    expect(result.command).toBe('init');
   });
 
   it('returns null command when none provided', () => {
@@ -98,5 +104,27 @@ describe('parseArgs', () => {
     expect(result.dryRun).toBe(false);
     expect(result.help).toBe(false);
     expect(result.version).toBe(false);
+  });
+});
+
+describe('generateConfigContent', () => {
+  it('generates valid JSON for json format', () => {
+    const content = generateConfigContent('json');
+    const parsed = JSON.parse(content);
+    expect(parsed.maxSizeKb).toBe(500);
+    expect(parsed.allowedFormats).toEqual(['webp']);
+  });
+
+  it('generates JS with export default', () => {
+    const content = generateConfigContent('js');
+    expect(content).toContain('export default');
+    expect(content).toContain('maxSizeKb: 500');
+  });
+
+  it('generates TS with typed import and export', () => {
+    const content = generateConfigContent('ts');
+    expect(content).toContain("import type { RawConfig } from '@squeeze/squeeze'");
+    expect(content).toContain('const config: RawConfig');
+    expect(content).toContain('export default config');
   });
 });
