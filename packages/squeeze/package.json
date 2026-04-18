@@ -10,7 +10,7 @@
   ],
   "type": "module",
   "scripts": {
-    "build": "rolldown -c",
+    "build": "rolldown -c && tsc --emitDeclarationOnly",
     "check": "tsc --noEmit",
     "lint": "oxlint",
     "fmt": "oxfmt --write",
