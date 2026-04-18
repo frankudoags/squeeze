@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
+    "module": "ES2022",
     "moduleResolution": "bundler",
     "strict": true,
     "esModuleInterop": true,
@@ -10,6 +11,7 @@
     "isolatedModules": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "types": ["node"]
   }
 }

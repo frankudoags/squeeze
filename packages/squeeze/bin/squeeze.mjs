@@ -11,4 +11,5 @@ if (!existsSync(distPath)) {
   process.exit(1);
 }
 
-await import(pathToFileURL(distPath).href);
+const mod = await import(pathToFileURL(distPath).href);
+await mod.run();

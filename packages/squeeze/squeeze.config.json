@@ -1,0 +1,15 @@
+  {                                                                                                                                                       
+    "includePaths": ["."],
+    "ignoreGlobs": ["**/node_modules/**", "**/.git/**"],                                                                                                  
+    "maxSizeKb": 500,                                                                                                                                   
+    "allowedFormats": ["webp"],                                                                                                                           
+    "outputStrategy": "side-by-side",                                                                                                                     
+    "qualityFloor": 60,
+    "maxCompressionIterations": 8,
+    "resizeFallback": {
+      "enabled": false,
+      "minWidth": 320,
+      "minHeight": 320,
+      "stepPercent": 10
+    }
+  }
