@@ -10,7 +10,7 @@
   ],
   "type": "module",
   "scripts": {
-    "build": "rolldown -c && tsc --emitDeclarationOnly",
+    "build": "rolldown -c && tsc --emitDeclarationOnly -p tsconfig.build.json",
     "check": "tsc --noEmit",
     "lint": "oxlint",
     "fmt": "oxfmt --write",
